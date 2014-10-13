@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+ 
+    <style type="text/css" >
+      canvas {
+        background-color:black;
+      }
+    </style>
+ 
+    <script type="text/javascript" >
+      var canvasWidth = 500;
+      var canvasHeight = 300;
+      var canvas;
+      var dc2d; 
+ 
+      // Define a basic sprite class
+      function Sprite(context, x, y, width, height)
+      {
+        this.context = context;
+ 
+        this.x = x;
+        this.y = y;
+ 
+        this.width = width;
+        this.height = height;
+ 
+        this.dx = 0;
+        this.dy = 0;
+ 
+        this.Animate = function() {
+          this.x = x + dx;
+          this.y = y + dy;
+ 
+          this.context.strokeRect(x,y,width,height);
+        }
+      }
+ 
+      // Extend the sprite class to make a bubble class
+      function Bubble(context, x, y, width, height, r, g, b)
+      {
+        this.baseClass = Sprite;
+        this.baseClass(context, x, y, width, height);
+ 
+        this.maxy = 0;
+ 
+        this.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+ 
+        this.Animate = function()
+        {
+          this.y = this.y + this.dy;
+ 
+          if( this.y < 0 ) this.y = this.maxy;
+ 
+          this.context.fillStyle = this.fillStyle;
+          this.context.fillRect( this.x, this.y, this.width, this.height);
+        }
+      }
+ 
+      // Main animation loop.     
+      function animationLoop()
+      {
+        render();
+        setTimeout("animationLoop()", 50);
+      }
+ 
+      var theta = 0;
+      var angle = Math.PI / 1028;
+ 
+      // Draws a single frame on the canvas     
+      function render()
+      {
+        theta = theta + angle;
+        if( theta > 2 * Math.PI ) theta = theta - 2 * Math.PI;
+ 
+        dc2d.clearRect(0, 0, 500, 300);
+ 
+        var sine = Math.sin(theta);
+ 
+        var gradient = dc2d.createLinearGradient(200,0,300,300);
+ 
+        gradient.addColorStop(0,"rgb(0,64,0)");
+        gradient.addColorStop(0.25*sine+0.5,"rgb(0,0,0)");
+        gradient.addColorStop(1,"rgb(16,32,16)");
+        dc2d.fillStyle = gradient;
+        dc2d.fillRect(0,0,500,300);
+ 
+        for( var i = 0; i < bubbleCount; i++ )
+        {
+          allBubbles[i].Animate();
+        }
+ 
+        dc2d.fillStyle = "rgb(0,255,0)";
+ 
+        dc2d.font = "50px sans-serif";
+        dc2d.textAlign = "center";
+        dc2d.globalAlpha = 0.5;
+        dc2d.fillText( "Microsoft", 250, 125 );
+        dc2d.fillText( "Expression Web", 250, 175 );
+ 
+        dc2d.globalAlpha = 1.0;
+      }
+ 
+      // Gets the canvas and 2D context     
+      function getCanvas()
+      {
+        canvas = document.getElementById("canvas1");
+ 
+        if( canvas )
+        {   
+          dc2d = canvas.getContext("2d");
+        }
+        else
+        {
+          alert("Failed to get canvas element");
+          return;
+        }
+      }
+ 
+      var allBubbles;
+      var bubbleCount = 250;
+ 
+      // Create all the bubbles we want to animate
+      function createBubbles()
+      {
+        allBubbles = new Array();
+ 
+        for( var i = 0; i < bubbleCount; i++ )
+        {
+          var width = Math.random() * 1 + Math.random() * 1 + 1;
+          var height = width;
+ 
+          var startPosX = Math.random() * (canvasWidth - width - 1);
+          var startPosY = Math.random() * (canvasHeight - height - 1);
+ 
+          var deltaX = 0;
+          var deltaY = -5 * Math.random() - 2.5;
+ 
+          var g = Math.floor( 128 * Math.random() + 127 );   
+          var r = Math.floor( 128 * Math.random() );
+ 
+          if ( r > g ) r = g; 
+          var b = r;
+ 
+          var bubble = new Bubble(dc2d, startPosX, startPosY, width, height, r, g, b);
+          bubble.dx = deltaX;
+          bubble.dy = deltaY;
+          bubble.maxy = 300;
+ 
+          allBubbles[i] = bubble;
+        }
+      }
+ 
+      // Starts the animation for the canvas
+      function startAnimation()
+      {
+        getCanvas();
+        createBubbles();
+ 
+        animationLoop();
+      }
+ 
+    </script>
+  </head>
+  <body>
+    <canvas width="500" height="300" id="canvas1">
+      Your browser does not support the CANVAS tag. Sorry!
+    </canvas>
+    <br>
+    <button onclick="startAnimation()" >Start Animation</button>
+  </body>
+</html>
+
+

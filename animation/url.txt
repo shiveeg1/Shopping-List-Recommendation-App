@@ -1,0 +1,4 @@
+http://tympanus.net/codrops/2013/05/07/a-collection-of-page-transitions/
+http://codepen.io/snorpey/pen/wpKLl
+http://codepen.io/fbrz/pen/whxbF
+https://developer.mozilla.org/ms/demos/detail/paperfold-css
